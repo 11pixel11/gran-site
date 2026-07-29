@@ -280,7 +280,8 @@
             padding: 3rem;
             display: flex;
             flex-direction: column;
-            justify-content: space-between;
+            justify-content: flex-start;
+            gap: 2rem;
             color: var(--color-bg);
         }
         .hero-visual-text .brand {
@@ -288,10 +289,11 @@
             font-size: 5rem;
             font-weight: 800;
             letter-spacing: 0.1em;
+            margin-bottom: 0;
         }
         .hero-stats {
             display: flex; gap: 2rem;
-            padding-top: 2rem;
+            padding-top: 1.5rem;
             border-top: 1px solid rgba(245, 247, 246, 0.15);
         }
         .hero-stat .number {
@@ -613,9 +615,14 @@
             .hero-buttons { flex-direction: column; width: 100%; }
             .hero-buttons .btn { width: 100%; }
             .hero-visual { max-height: 320px; aspect-ratio: 16/10; }
-            .hero-visual-text { padding: 2rem; }
-            .hero-visual-text .brand { font-size: 3.5rem; }
+            .hero-visual-text { 
+                padding: 2rem; 
+                justify-content: flex-start;
+                gap: 1.5rem;
+            }    
+            .hero-visual-text .brand { font-size: 3.5rem; margin-bottom: 0; }
             .hero-stat .number { font-size: 2rem; }
+            .hero-stats { gap: 1.5rem; padding-top: 1rem; }
             .marquee-item { font-size: 1rem; }
             .categories, .cooperation, .cta-section { padding: 4rem 0; }
             .stats { padding: 3rem 0; }
