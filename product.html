@@ -12,20 +12,20 @@
     
     <style>
         :root {
-            --color-primary: #1B3B3B;
-            --color-primary-light: #2D5A5A;
-            --color-primary-mid: #3D7A7A;
-            --color-primary-soft: #5A9A9A;
-            --color-accent: #B8956A;
+            --color-primary: #0F2525;
+            --color-primary-light: #1B3B3B;
+            --color-primary-mid: #2D5A5A;
+            --color-primary-soft: #3D7A7A;
+            --color-accent: #C9A962;
             --color-accent-soft: #D4B896;
-            --color-bg: #F5F7F6;
+            --color-bg: #F0F4F3;
             --color-surface: #FFFFFF;
-            --color-text: #1A2A2A;
-            --color-text-muted: #6B7F7F;
-            --color-border: rgba(27, 59, 59, 0.08);
-            --shadow-sm: 0 2px 8px rgba(27, 59, 59, 0.06);
-            --shadow-md: 0 8px 24px rgba(27, 59, 59, 0.08);
-            --shadow-lg: 0 16px 48px rgba(27, 59, 59, 0.12);
+            --color-text: #0F2525;
+            --color-text-muted: #5A6B6B;
+            --color-border: rgba(15, 37, 37, 0.12);
+            --shadow-sm: 0 2px 8px rgba(15, 37, 37, 0.08);
+            --shadow-md: 0 8px 24px rgba(15, 37, 37, 0.12);
+            --shadow-lg: 0 16px 48px rgba(15, 37, 37, 0.15);
             --radius-sm: 4px;
             --radius-md: 12px;
             --radius-lg: 20px;
@@ -35,6 +35,711 @@
             --transition: all 0.5s cubic-bezier(0.22, 1, 0.36, 1);
         }
 
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        html { scroll-behavior: smooth; }
+        body {
+            font-family: var(--font-sans);
+            background-color: var(--color-bg);
+            color: var(--color-text);
+            line-height: 1.6;
+            overflow-x: hidden;
+            -webkit-font-smoothing: antialiased;
+        }
+
+        header {
+            position: fixed;
+            top: 0; left: 0; width: 100%;
+            z-index: 1000;
+            background: linear-gradient(135deg, rgba(27, 59, 59, 0.98) 0%, rgba(15, 37, 37, 0.98) 100%);
+            backdrop-filter: blur(20px);
+            -webkit-backdrop-filter: blur(20px);
+            padding: 1.25rem 0;
+            transition: var(--transition);
+            box-shadow: 0 4px 20px rgba(15, 37, 37, 0.25);
+        }
+        header.scrolled { padding: 0.875rem 0; }
+
+        .nav-container {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 0 2rem;
+        }
+
+        .logo {
+            font-family: var(--font-logo);
+            font-size: 2.25rem;
+            font-weight: 400;
+            color: var(--color-bg);
+            letter-spacing: 0.05em;
+            text-decoration: none;
+        }
+        .logo-dot {
+            width: 10px; height: 10px;
+            background-color: var(--color-accent);
+            border-radius: 50%;
+            display: inline-block;
+            margin-left: 4px;
+        }
+
+        .nav-links { display: flex; gap: 3rem; list-style: none; }
+        .nav-links a {
+            font-size: 0.9rem; font-weight: 500;
+            color: rgba(240, 244, 243, 0.95);
+            text-decoration: none;
+            transition: var(--transition);
+        }
+        .nav-links a:hover { color: var(--color-accent); }
+
+        .btn-contact {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.75rem;
+            padding: 1rem 2.25rem;
+            background: linear-gradient(135deg, var(--color-bg) 0%, #E8EDEB 100%);
+            color: var(--color-primary);
+            font-size: 0.85rem;
+            font-weight: 700;
+            letter-spacing: 0.15em;
+            text-transform: uppercase;
+            border-radius: var(--radius-sm);
+            text-decoration: none;
+            transition: var(--transition);
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+        }
+        .btn-contact:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 24px rgba(201, 169, 98, 0.4);
+        }
+
+        .mobile-menu-btn {
+            display: none;
+            width: 44px; height: 44px;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            gap: 6px;
+            background: none; border: none;
+            cursor: pointer;
+        }
+        .mobile-menu-btn span {
+            display: block;
+            width: 24px; height: 2px;
+            background-color: var(--color-bg);
+            transition: all 0.3s cubic-bezier(0.22, 1, 0.36, 1);
+        }
+        .mobile-menu-btn.active span:nth-child(1) { transform: translateY(8px) rotate(45deg); }
+        .mobile-menu-btn.active span:nth-child(2) { opacity: 0; }
+        .mobile-menu-btn.active span:nth-child(3) { transform: translateY(-8px) rotate(-45deg); }
+
+        .mobile-menu {
+            position: fixed;
+            top: 0; left: 0;
+            width: 100%; height: 100vh; height: 100dvh;
+            background: linear-gradient(160deg, #0A1A1A 0%, #0F2525 50%, #1B3B3B 100%);
+            z-index: 1001;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            padding: 2rem;
+            opacity: 0; visibility: hidden;
+            transition: opacity 0.4s ease, visibility 0.4s ease;
+        }
+        .mobile-menu.active { opacity: 1; visibility: visible; }
+        .mobile-menu-nav { list-style: none; width: 100%; max-width: 400px; }
+        .mobile-menu-nav li {
+            opacity: 0; transform: translateY(20px);
+            transition: opacity 0.4s ease, transform 0.4s ease;
+        }
+        .mobile-menu.active .mobile-menu-nav li { opacity: 1; transform: translateY(0); }
+        .mobile-menu.active .mobile-menu-nav li:nth-child(1) { transition-delay: 0.1s; }
+        .mobile-menu.active .mobile-menu-nav li:nth-child(2) { transition-delay: 0.2s; }
+        .mobile-menu.active .mobile-menu-nav li:nth-child(3) { transition-delay: 0.3s; }
+        .mobile-menu.active .mobile-menu-nav li:nth-child(4) { transition-delay: 0.4s; }
+        .mobile-menu-nav a {
+            display: block;
+            font-family: var(--font-serif);
+            font-size: 2rem; font-weight: 500;
+            color: var(--color-bg);
+            text-decoration: none;
+            padding: 1.25rem 0;
+            border-bottom: 1px solid rgba(240, 244, 243, 0.15);
+        }
+        .mobile-menu-nav a:hover { color: var(--color-accent); }
+
+        .product-page { padding-top: 100px; min-height: 100vh; }
+        .breadcrumbs {
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 2rem 2rem 1rem;
+            font-size: 0.875rem;
+            color: var(--color-text-muted);
+        }
+        .breadcrumbs a {
+            color: var(--color-primary-mid);
+            text-decoration: none;
+            transition: var(--transition);
+        }
+        .breadcrumbs a:hover { color: var(--color-accent); }
+        .breadcrumbs span { margin: 0 0.5rem; }
+
+        .product-layout {
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 2rem;
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 4rem;
+            align-items: start;
+        }
+
+        .product-gallery {
+            position: sticky;
+            top: 120px;
+        }
+        .product-main-image {
+            aspect-ratio: 1;
+            background: linear-gradient(135deg, var(--color-primary-mid), var(--color-primary-light));
+            border-radius: var(--radius-lg);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            position: relative;
+            overflow: hidden;
+            box-shadow: var(--shadow-lg);
+        }
+        .product-main-image::before {
+            content: '';
+            position: absolute;
+            inset: 0;
+            background: radial-gradient(circle at 30% 30%, rgba(201, 169, 98, 0.35) 0%, transparent 60%);
+        }
+        .product-main-image-icon {
+            font-size: 8rem;
+            color: var(--color-accent);
+            z-index: 1;
+            opacity: 0.95;
+        }
+        .product-category-tag {
+            position: absolute;
+            top: 1.5rem; left: 1.5rem;
+            background: rgba(240, 244, 243, 0.95);
+            color: var(--color-primary-mid);
+            padding: 0.5rem 1.25rem;
+            border-radius: 50px;
+            font-size: 0.75rem;
+            font-weight: 600;
+            letter-spacing: 0.1em;
+            text-transform: uppercase;
+            z-index: 2;
+        }
+
+        .product-details { padding: 1rem 0; }
+        .product-title {
+            font-family: var(--font-serif);
+            font-size: clamp(2rem, 4vw, 3rem);
+            color: var(--color-primary);
+            margin-bottom: 1rem;
+            line-height: 1.1;
+        }
+        .product-price-large {
+            font-family: var(--font-serif);
+            font-size: 2rem;
+            color: var(--color-primary-mid);
+            font-weight: 600;
+            margin-bottom: 2rem;
+            display: inline-block;
+            padding: 0.75rem 1.5rem;
+            background: rgba(45, 90, 90, 0.1);
+            border-radius: var(--radius-md);
+        }
+        .product-description-full {
+            font-size: 1.05rem;
+            color: var(--color-text);
+            line-height: 1.7;
+            margin-bottom: 2rem;
+        }
+        .product-specs {
+            background: var(--color-surface);
+            border: 1px solid var(--color-border);
+            border-radius: var(--radius-md);
+            padding: 1.5rem;
+            margin-bottom: 2rem;
+        }
+        .product-specs h3 {
+            font-family: var(--font-serif);
+            font-size: 1.25rem;
+            color: var(--color-primary);
+            margin-bottom: 1rem;
+        }
+        .product-specs p {
+            color: var(--color-text-muted);
+            font-size: 0.95rem;
+            line-height: 1.6;
+        }
+        .product-features { margin-bottom: 2rem; }
+        .product-features h3 {
+            font-family: var(--font-serif);
+            font-size: 1.25rem;
+            color: var(--color-primary);
+            margin-bottom: 1rem;
+        }
+        .features-list {
+            list-style: none;
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 0.75rem;
+        }
+        .features-list li {
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+            font-size: 0.95rem;
+            color: var(--color-text);
+        }
+        .features-list li::before {
+            content: '✓';
+            width: 24px; height: 24px;
+            background: var(--color-primary-mid);
+            color: white;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 0.75rem;
+            font-weight: 700;
+            flex-shrink: 0;
+        }
+        .product-applications {
+            background: linear-gradient(135deg, rgba(45, 90, 90, 0.08), rgba(27, 59, 59, 0.08));
+            border-left: 3px solid var(--color-primary-mid);
+            padding: 1.5rem;
+            border-radius: var(--radius-sm);
+            margin-bottom: 2rem;
+        }
+        .product-applications h3 {
+            font-family: var(--font-serif);
+            font-size: 1.125rem;
+            color: var(--color-primary);
+            margin-bottom: 0.5rem;
+        }
+        .product-applications p {
+            color: var(--color-text-muted);
+            font-size: 0.95rem;
+        }
+
+        .request-form {
+            background: var(--color-surface);
+            border: 1px solid var(--color-border);
+            border-radius: var(--radius-lg);
+            padding: 2rem;
+            box-shadow: var(--shadow-md);
+        }
+        .request-form h3 {
+            font-family: var(--font-serif);
+            font-size: 1.5rem;
+            color: var(--color-primary);
+            margin-bottom: 0.5rem;
+        }
+        .request-form > p {
+            color: var(--color-text-muted);
+            font-size: 0.9rem;
+            margin-bottom: 1.5rem;
+        }
+        .form-group { margin-bottom: 1rem; }
+        .form-group label {
+            display: block;
+            font-size: 0.85rem;
+            font-weight: 600;
+            color: var(--color-text);
+            margin-bottom: 0.5rem;
+        }
+        .form-group input,
+        .form-group textarea {
+            width: 100%;
+            padding: 0.875rem 1rem;
+            border: 1px solid var(--color-border);
+            border-radius: var(--radius-sm);
+            font-size: 0.95rem;
+            font-family: var(--font-sans);
+            transition: var(--transition);
+            background: var(--color-bg);
+        }
+        .form-group input:focus,
+        .form-group textarea:focus {
+            outline: none;
+            border-color: var(--color-primary-mid);
+            box-shadow: 0 0 0 3px rgba(45, 90, 90, 0.15);
+        }
+        .form-group textarea { resize: vertical; min-height: 100px; }
+        .btn-submit {
+            width: 100%;
+            padding: 1rem;
+            background: linear-gradient(135deg, var(--color-primary-mid), var(--color-primary-light));
+            color: white;
+            border: none;
+            border-radius: var(--radius-sm);
+            font-size: 0.9rem;
+            font-weight: 600;
+            letter-spacing: 0.1em;
+            text-transform: uppercase;
+            cursor: pointer;
+            transition: var(--transition);
+            font-family: var(--font-sans);
+        }
+        .btn-submit:hover {
+            transform: translateY(-2px);
+            box-shadow: var(--shadow-lg);
+        }
+        .form-success {
+            display: none;
+            text-align: center;
+            padding: 2rem;
+        }
+        .form-success.show { display: block; }
+        .form-success .check-icon {
+            width: 64px; height: 64px;
+            background: var(--color-primary-mid);
+            color: white;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 2rem;
+            margin: 0 auto 1rem;
+        }
+        .form-success h4 {
+            font-family: var(--font-serif);
+            font-size: 1.5rem;
+            color: var(--color-primary);
+            margin-bottom: 0.5rem;
+        }
+        .form-success p { color: var(--color-text-muted); }
+
+        .not-found {
+            max-width: 800px;
+            margin: 4rem auto;
+            padding: 4rem 2rem;
+            text-align: center;
+        }
+        .not-found h1 {
+            font-family: var(--font-serif);
+            font-size: 3rem;
+            color: var(--color-primary);
+            margin-bottom: 1rem;
+        }
+        .not-found p {
+            font-size: 1.125rem;
+            color: var(--color-text-muted);
+            margin-bottom: 2rem;
+        }
+        .btn-back {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.75rem;
+            padding: 1rem 2rem;
+            background: var(--color-primary-mid);
+            color: white;
+            text-decoration: none;
+            border-radius: var(--radius-sm);
+            font-weight: 600;
+            transition: var(--transition);
+        }
+        .btn-back:hover {
+            background: var(--color-primary-light);
+            transform: translateY(-2px);
+        }
+
+        footer {
+            background: var(--color-primary);
+            color: rgba(240, 244, 243, 0.8);
+            padding: 4rem 0 2rem;
+            margin-top: 4rem;
+        }
+        .footer-content {
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 0 2rem;
+            display: grid;
+            grid-template-columns: 2fr 1fr 1fr 1fr;
+            gap: 3rem;
+            margin-bottom: 3rem;
+        }
+        .footer-col h4 {
+            color: var(--color-bg);
+            font-size: 0.75rem;
+            letter-spacing: 0.2em;
+            text-transform: uppercase;
+            margin-bottom: 1.5rem;
+            font-weight: 600;
+        }
+        .footer-col ul { list-style: none; }
+        .footer-col ul li { margin-bottom: 0.875rem; }
+        .footer-col a {
+            color: rgba(240, 244, 243, 0.8);
+            text-decoration: none;
+            transition: var(--transition);
+        }
+        .footer-col a:hover { color: var(--color-accent); }
+        .footer-bottom {
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 2rem 2rem 0;
+            border-top: 1px solid rgba(240, 244, 243, 0.15);
+            text-align: center;
+            font-size: 0.85rem;
+        }
+
+        @media (max-width: 968px) {
+            .nav-links, .btn-contact { display: none; }
+            .mobile-menu-btn { display: flex; }
+            .product-layout { grid-template-columns: 1fr; gap: 2rem; }
+            .product-gallery { position: static; }
+            .footer-content { grid-template-columns: 1fr 1fr; }
+        }
+        @media (max-width: 768px) {
+            header { padding: 1rem 0; }
+            .nav-container { padding: 0 1.25rem; }
+            .logo { font-size: 1.75rem; }
+            .product-page { padding-top: 80px; }
+            .breadcrumbs { padding: 1.5rem 1.25rem 0.5rem; font-size: 0.8rem; }
+            .product-layout { padding: 1.5rem 1.25rem; gap: 2rem; }
+            .product-main-image-icon { font-size: 5rem; }
+            .product-title { font-size: 1.75rem; }
+            .product-price-large { font-size: 1.5rem; }
+            .features-list { grid-template-columns: 1fr; }
+            .footer-content { grid-template-columns: 1fr; gap: 2rem; padding: 0 1.25rem; }
+            .footer-bottom { padding: 1.5rem 1.25rem 0; }
+        }
+        @media (hover: none) and (pointer: coarse) {
+            .btn-submit:active { transform: scale(0.98); }
+        }
+    </style>
+</head>
+<body>
+
+    <header id="header">
+        <div class="nav-container">
+            <a href="index.html" class="logo">GRAN<span class="logo-dot"></span></a>
+            <nav>
+                <ul class="nav-links">
+                    <li><a href="index.html#cooperation">Сотрудничество</a></li>
+                    <li><a href="catalog.html">Каталог</a></li>
+                    <li><a href="index.html#about">О компании</a></li>
+                    <li><a href="index.html#contacts">Контакты</a></li>
+                </ul>
+            </nav>
+            <a href="index.html#contact" class="btn-contact">Связаться</a>
+            <button class="mobile-menu-btn" id="mobileMenuBtn">
+                <span></span><span></span><span></span>
+            </button>
+        </div>
+    </header>
+
+    <div class="mobile-menu" id="mobileMenu">
+        <ul class="mobile-menu-nav">
+            <li><a href="index.html#cooperation" class="mobile-link">Сотрудничество</a></li>
+            <li><a href="catalog.html" class="mobile-link">Каталог</a></li>
+            <li><a href="index.html#about" class="mobile-link">О компании</a></li>
+            <li><a href="index.html#contacts" class="mobile-link">Контакты</a></li>
+        </ul>
+    </div>
+
+    <div class="product-page" id="productPage"></div>
+
+    <footer>
+        <div class="footer-content">
+            <div class="footer-col">
+                <div class="logo" style="margin-bottom: 1rem; color: var(--color-bg);">GRAN<span class="logo-dot"></span></div>
+                <p style="font-size: 0.9rem;">Надёжный B2B-партнёр для производственных предприятий с 2014 года</p>
+            </div>
+            <div class="footer-col">
+                <h4>Навигация</h4>
+                <ul>
+                    <li><a href="index.html#cooperation">Сотрудничество</a></li>
+                    <li><a href="catalog.html">Каталог</a></li>
+                    <li><a href="index.html#about">О компании</a></li>
+                </ul>
+            </div>
+            <div class="footer-col">
+                <h4>Контакты</h4>
+                <ul>
+                    <li><a href="mailto:sale@i-gran.ru">sale@i-gran.ru</a></li>
+                    <li><a href="tel:+79034426600">8 (903) 442-66-00</a></li>
+                </ul>
+            </div>
+            <div class="footer-col">
+                <h4>Адрес</h4>
+                <ul>
+                    <li>Москва, Пресненская наб., 12</li>
+                    <li>Пн-Пт: 9:00 — 19:00</li>
+                </ul>
+            </div>
+        </div>
+        <div class="footer-bottom">
+            <p>© 2026 ООО "Gran". Все права защищены.</p>
+        </div>
+    </footer>
+
+    <script src="products.js"></script>
+    <script>
+        const header = document.getElementById('header');
+        window.addEventListener('scroll', () => {
+            header.classList.toggle('scrolled', window.scrollY > 50);
+        });
+
+        const mobileMenuBtn = document.getElementById('mobileMenuBtn');
+        const mobileMenu = document.getElementById('mobileMenu');
+        const mobileLinks = document.querySelectorAll('.mobile-link');
+
+        mobileMenuBtn.addEventListener('click', () => {
+            mobileMenuBtn.classList.toggle('active');
+            mobileMenu.classList.toggle('active');
+        });
+
+        mobileLinks.forEach(link => {
+            link.addEventListener('click', () => {
+                mobileMenuBtn.classList.remove('active');
+                mobileMenu.classList.remove('active');
+            });
+        });
+
+        const urlParams = new URLSearchParams(window.location.search);
+        const productId = urlParams.get('id');
+        const productPage = document.getElementById('productPage');
+
+        if (!productId || !getProductById(productId)) {
+            productPage.innerHTML = `
+                <div class="not-found">
+                    <h1>Товар не найден</h1>
+                    <p>Возможно, товар был удалён или ссылка неверна</p>
+                    <a href="catalog.html" class="btn-back">← Вернуться в каталог</a>
+                </div>
+            `;
+        } else {
+            const product = getProductById(productId);
+            
+            document.title = `${product.name} — Gran`;
+            document.querySelector('meta[name="description"]').setAttribute('content', product.description);
+
+            productPage.innerHTML = `
+                <div class="breadcrumbs">
+                    <a href="index.html">Главная</a>
+                    <span>→</span>
+                    <a href="catalog.html?category=${product.category}">Каталог</a>
+                    <span>→</span>
+                    <a href="catalog.html?category=${product.category}">${product.categoryName}</a>
+                    <span>→</span>
+                    ${product.name}
+                </div>
+
+                <div class="product-layout">
+                    <div class="product-gallery">
+                        <div class="product-main-image">
+                            <span class="product-category-tag">${product.categoryName}</span>
+                            <span class="product-main-image-icon">◈</span>
+                        </div>
+                    </div>
+
+                    <div class="product-details">
+                        <h1 class="product-title">${product.name}</h1>
+                        <div class="product-price-large">${product.price}</div>
+                        
+                        <p class="product-description-full">${product.description}</p>
+
+                        <div class="product-specs">
+                            <h3>Характеристики</h3>
+                            <p>${product.specs}</p>
+                        </div>
+
+                        <div class="product-features">
+                            <h3>Особенности</h3>
+                            <ul class="features-list">
+                                ${product.features.map(f => `<li>${f}</li>`).join('')}
+                            </ul>
+                        </div>
+
+                        <div class="product-applications">
+                            <h3>Применение</h3>
+                            <p>${product.applications}</p>
+                        </div>
+
+                        <div class="request-form" id="requestForm">
+                            <h3>Оставить заявку</h3>
+                            <p>Заполните форму и мы свяжемся с вами в течение рабочего дня</p>
+                            
+                            <form id="productRequestForm">
+                                <div class="form-group">
+                                    <label for="name">Ваше имя *</label>
+                                    <input type="text" id="name" name="name" required placeholder="Иван Иванов">
+                                </div>
+                                <div class="form-group">
+                                    <label for="company">Компания</label>
+                                    <input type="text" id="company" name="company" placeholder="ООО «Компания»">
+                                </div>
+                                <div class="form-group">
+                                    <label for="phone">Телефон *</label>
+                                    <input type="tel" id="phone" name="phone" required placeholder="+7 (___) ___-__-__">
+                                </div>
+                                <div class="form-group">
+                                    <label for="email">Email *</label>
+                                    <input type="email" id="email" name="email" required placeholder="email@company.ru">
+                                </div>
+                                <div class="form-group">
+                                    <label for="message">Сообщение</label>
+                                    <textarea id="message" name="message" placeholder="Интересует оптовая партия...">Здравствуйте! Интересует товар: ${product.name}. Прошу выслать коммерческое предложение.</textarea>
+                                </div>
+                                <button type="submit" class="btn-submit">Отправить заявку</button>
+                            </form>
+
+                            <div class="form-success" id="formSuccess">
+                                <div class="check-icon">✓</div>
+                                <h4>Заявка отправлена!</h4>
+                                <p>Мы свяжемся с вами в течение рабочего дня</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            `;
+
+            const form = document.getElementById('productRequestForm');
+            const formSuccess = document.getElementById('formSuccess');
+
+            form.addEventListener('submit', (e) => {
+                e.preventDefault();
+                
+                const formData = new FormData(form);
+                const data = Object.fromEntries(formData);
+                
+                console.log('Form data:', data);
+                console.log('Product:', product.name);
+                
+                form.style.display = 'none';
+                formSuccess.classList.add('show');
+                formSuccess.scrollIntoView({ behavior: 'smooth', block: 'center' });
+            });
+
+            const phoneInput = document.getElementById('phone');
+            phoneInput.addEventListener('input', (e) => {
+                let value = e.target.value.replace(/\D/g, '');
+                if (value.startsWith('7')) value = value.substring(1);
+                if (value.startsWith('8')) value = value.substring(1);
+                
+                let formatted = '+7';
+                if (value.length > 0) formatted += ' (' + value.substring(0, 3);
+                if (value.length >= 3) formatted += ') ' + value.substring(3, 6);
+                if (value.length >= 6) formatted += '-' + value.substring(6, 8);
+                if (value.length >= 8) formatted += '-' + value.substring(8, 10);
+                
+                e.target.value = formatted;
+            });
+        }
+    </script>
+</body>
+</html>
         * { margin: 0; padding: 0; box-sizing: border-box; }
         html { scroll-behavior: smooth; }
         body {
